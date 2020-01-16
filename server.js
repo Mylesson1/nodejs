@@ -11,6 +11,7 @@ const app = express();
 const port = 3400;
 
 const connection = new Sequelize('freelancer', 'my_db_name_1', '12345', {
+    name:'hayko',
     host: 'localhost',
     dialect: 'mysql',
     pool: { max: 5, min: 0, idle: 3400 },
