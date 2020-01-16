@@ -1,11 +1,11 @@
 const express = require('express');
-// const path = require('path');
-// const nodeMailer = require('nodemailer');
+const path = require('path');
+const nodeMailer = require('nodemailer');
 const bodyParser = require('body-parser');
-// const fs = require('fs');
-// const md5 = require('crypto');
+const fs = require('fs');
+const md5 = require('crypto');
 const Sequelize = require('sequelize');
-// const jwt = require("jsonwebtoken");
+const jwt = require("jsonwebtoken");
 const Op = Sequelize.Op;
 const app = express();
 const port = 3400;
@@ -27,10 +27,10 @@ app.use((req, res, next) => {
 
 const Users = connection.define("users", {
     id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true, },
-    firstname: { type: Sequelize.STRING,  allowNull: false },
-    lastname: { type: Sequelize.STRING,  allowNull: false },
-    email: { type: Sequelize.STRING,  allowNull: false },
-    password: { type: Sequelize.STRING,  allowNull: false },
+    firstname: { type: Sequelize.STRING, allowNull: false },
+    lastname: { type: Sequelize.STRING, allowNull: false },
+    email: { type: Sequelize.STRING, allowNull: false },
+    password: { type: Sequelize.STRING, allowNull: false },
 });
 
 
@@ -39,17 +39,17 @@ const Users = connection.define("users", {
 const Products = connection.define("products", {
     id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true, },
     title: { type: Sequelize.STRING, allowNull: false },
-    image: { type: Sequelize.STRING,  allowNull: false },
+    image: { type: Sequelize.STRING, allowNull: false },
     price: { type: Sequelize.INTEGER },
-    currency: { type: Sequelize.STRING,  allowNull: false },
+    currency: { type: Sequelize.STRING, allowNull: false },
     category: { type: Sequelize.INTEGER },
     subCategory: { type: Sequelize.INTEGER },
-    description: { type: Sequelize.STRING,  allowNull: false },
+    description: { type: Sequelize.STRING, allowNull: false },
 });
 
 const Images = connection.define("images", {
     id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true, },
-    image: { type: Sequelize.STRING,  allowNull: false },
+    image: { type: Sequelize.STRING, allowNull: false },
 });
 
 
@@ -71,7 +71,7 @@ Products.hasMany(Images);
 connection.sync();
 
 app.get('/api/navbars', (req, res) => {
-    Navbars.findAll({include: [Sub]}).then(navbars => {
+    Navbars.findAll({ include: [Sub] }).then(navbars => {
         res.json(navbars);
     }).catch((error) => {
         res.json({ error: true, message: error.message })
@@ -80,44 +80,39 @@ app.get('/api/navbars', (req, res) => {
 
 
 app.get('/api/products/page/:page/limit/:limit', (req, res) => {
-//    let ssssssssss = {
-//         offset: Number(req.body.limit) * Number(req.body.page),
-//          limit: Number(req.body.limit)
-        
-//         }
 
-        let ssssssssss = {
-            offset: Number(req.params.limit) * Number(req.params.page) - Number(req.params.limit) < 0 ? 0 : Number(req.params.limit) * Number(req.params.page) - Number(req.params.limit),
-             limit: Number(req.params.limit)
-            
-            }
+    let ssssssssss = {
+        offset: Number(req.params.limit) * Number(req.params.page) - Number(req.params.limit) < 0 ? 0 : Number(req.params.limit) * Number(req.params.page) - Number(req.params.limit),
+        limit: Number(req.params.limit)
+
+    }
     Products.findAll(ssssssssss).then(products => {
         res.json(products);
     }).catch((error) => {
         res.json({ error: true, message: error.message })
     })
-console.log(req.body)
-  
+    console.log(req.body)
+
 });
 
 app.post('/api/products-count', (req, res) => {
-   
-     Products.findAll().then(products => {
-         res.json(products.length);
-     }).catch((error) => {
-         res.json({ error: true, message: error.message })
-     })
- });
+
+    Products.findAll().then(products => {
+        res.json(products.length);
+    }).catch((error) => {
+        res.json({ error: true, message: error.message })
+    })
+});
 
 app.post('/api/products-id', (req, res) => {
     let idd = parseInt(req.body.id);
     Products.findAll({
-        where:{
+        where: {
             subCategory: idd
         },
         offset: req.body.count,
         limit: req.body.limit
-        
+
     }).then(products => {
         res.json(products);
     }).catch((error) => {
@@ -155,7 +150,7 @@ app.post('/insert/user', (req, res) => {
             res.status(400).json({ error: true, message: error.message });
         }
     }).catch((error) => {
-        res.json({ error: true, message: error.message})
+        res.json({ error: true, message: error.message })
     });
 });
 
@@ -164,7 +159,7 @@ app.post('/insert/user', (req, res) => {
 
 app.get('/api/product-item/:id', (req, res) => {
     let ids = req.params.id;
-    Products.findOne({include: [Images], where:{id: ids}}).then(products => {
+    Products.findOne({ include: [Images], where: { id: ids } }).then(products => {
         res.json(products);
     }).catch((error) => {
         res.json({ error: true, message: error.message })
@@ -175,34 +170,29 @@ app.get('/api/product-item/:id', (req, res) => {
 
 
 app.use('/', express.static(__dirname));
-app.get('/', (req, res)=>{
+app.get('/', (req, res) => {
     res.sendFile(__dirname + '/index.html');
 });
 
-app.get('/item/:id', (req, res)=>{
+app.get('/item/:id', (req, res) => {
     res.sendFile(__dirname + '/index.html');
 });
 
-app.get('/category/:id', (req, res)=>{
+app.get('/category/:id', (req, res) => {
     res.sendFile(__dirname + '/index.html');
 });
 
-app.get('/sub/:id', (req, res)=>{
+app.get('/sub/:id', (req, res) => {
     res.sendFile(__dirname + '/index.html');
 });
 
-app.get('/sign-up', (req, res)=>{
+app.get('/sign-up', (req, res) => {
     res.sendFile(__dirname + '/index.html');
 });
 
-app.get('/sign-in', (req, res)=>{
+app.get('/sign-in', (req, res) => {
     res.sendFile(__dirname + '/index.html');
 });
-
-
-
-
-
 
 // app.post('/insert', (req, res) => {
 
